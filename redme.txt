@@ -1,0 +1,3 @@
+Execute esse comando para reproduzir no gitpod:
+
+python -m http.server 8000
