@@ -3,6 +3,7 @@
 
 <head>
     <title> page </title>
+
     <style>
         html,
         body {
@@ -24,7 +25,7 @@
 </head>
 
 <body>
-    <canvas width="600" height="600" id="game"></canvas>
+    <canvas width="640" height="640" id="game"></canvas>
     <script>
         var canvas = document.getElementById('game');
         var context = canvas.getContext('2d');
@@ -46,6 +47,7 @@
             // length of the snake. grows when eating an apple
             maxCells: 4
         };
+
         var apple = {
             x: 320,
             y: 320
@@ -113,8 +115,8 @@
                     snake.maxCells++;
 
                     // canvas is 400x400 which is 25x25 grids 
-                    apple.x = getRandomInt(0, 25) * grid;
-                    apple.y = getRandomInt(0, 25) * grid;
+                    apple.x = getRandomInt(0, 40) * grid;
+                    apple.y = getRandomInt(0, 40) * grid;
                 }
 
                 // check collision with all cells after this one (modified bubble sort)
@@ -129,8 +131,8 @@
                         snake.dx = grid;
                         snake.dy = 0;
 
-                        apple.x = getRandomInt(0, 25) * grid;
-                        apple.y = getRandomInt(0, 25) * grid;
+                        apple.x = getRandomInt(0, 40) * grid;
+                        apple.y = getRandomInt(0, 40) * grid;
                     }
                 }
             });
