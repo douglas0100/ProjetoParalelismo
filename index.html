@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <title>Snake Multiplayer</title>
+
+    <style>
+        html,
+        body {
+            height: 100%;
+            margin: 0;
+        }
+
+        body {
+            background: black;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        canvas {
+            border: 1px solid white;
+        }
+    </style>
+</head>
+
+<body>
+    <canvas width="640" height="640" id="game"></canvas>
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        var canvas = document.getElementById('game');
+        var context = canvas.getContext('2d');
+
+        var grid = 16;
+        var count = 0;
+
+        var socket = io();
+
+        socket.on('connect', function () {
+            socket.emit('newPlayer');
+        });
+
+        socket.on('state', function (players) {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            for (var playerId in players) {
+                var player = players[playerId];
+                var snake = player.snake;
+
+                context.fillStyle = 'green';
+                snake.cells.forEach(function (cell, index) {
+                    context.fillRect(cell.x, cell.y, grid - 1, grid - 1);
+                });
+
+                context.fillStyle = 'red';
+                context.fillRect(snake.x, snake.y, grid - 1, grid - 1);
+            }
+        });
+
+        document.addEventListener('keydown', function (e) {
+            if (e.which === 37) {
+                socket.emit('updateDirection', { dx: -grid, dy: 0 });
+            } else if (e.which === 38) {
+                socket.emit('updateDirection', { dx: 0, dy: -grid });
+            } else if (e.which === 39) {
+                socket.emit('updateDirection', { dx: grid, dy: 0 });
+            } else if (e.which === 40) {
+                socket.emit('updateDirection', { dx: 0, dy: grid });
+            }
+        });
+    </script>
+</body>
+
+</html>
