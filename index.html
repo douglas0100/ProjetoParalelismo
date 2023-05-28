@@ -57,6 +57,13 @@
             }
         });
 
+        socket.on('fruits', function (fruits) {
+            context.fillStyle = 'yellow';
+            fruits.forEach(function (fruit) {
+                context.fillRect(fruit.x, fruit.y, grid - 1, grid - 1);
+            });
+        });
+
         document.addEventListener('keydown', function (e) {
             if (e.which === 37) {
                 socket.emit('updateDirection', { dx: -grid, dy: 0 });

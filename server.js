@@ -15,17 +15,24 @@ app.get('/', (req, res) => {
 
 // Adicione abaixo do código `const io = socketIO(server);`
 const players = {};
+let fruits = []; // Array para armazenar as frutas
 
 function generateRandomFruitPosition() {
-    var position = {
+    const grid = 16; // Tamanho do grid da cobra (mesmo valor utilizado no cliente)
+    const position = {
         x: Math.floor(Math.random() * 40) * grid,
         y: Math.floor(Math.random() * 40) * grid
     };
     return position;
 }
 
-io.on('connection', (socket) => {
+function createFruit() {
+    const fruit = generateRandomFruitPosition();
+    fruits.push(fruit);
+    io.emit('fruits', fruits); // Emitir as frutas para todos os jogadores
+}
 
+io.on('connection', (socket) => {
     socket.on('newPlayer', () => {
         players[socket.id] = {
             snake: {
@@ -37,6 +44,7 @@ io.on('connection', (socket) => {
                 maxCells: 4
             }
         };
+        socket.emit('fruits', fruits); // Enviar as frutas existentes para o novo jogador
     });
 
     socket.on('updateDirection', (direction) => {
@@ -75,10 +83,22 @@ setInterval(() => {
             snake.cells.pop();
         }
 
+        // Verificar colisão com as frutas
+        fruits.forEach((fruit, index) => {
+            if (snake.x === fruit.x && snake.y === fruit.y) {
+                snake.maxCells++; // Aumentar o tamanho da cobra
+                fruits.splice(index, 1); // Remover a fruta do array de frutas
+            }
+        });
+    }
 
+    // Gerar uma nova fruta se não houver frutas no momento
+    if (fruits.length === 0) {
+        createFruit();
     }
 
     io.emit('state', players);
+    io.emit('fruits', fruits); // Emitir as frutas atualizadas para todos os jogadores
 }, 1000 / 15);
 
 server.listen(port, () => {
