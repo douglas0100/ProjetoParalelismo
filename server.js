@@ -32,6 +32,21 @@ function createFruit() {
     io.emit('fruits', fruits); // Emitir as frutas para todos os jogadores
 }
 
+function checkCollisionWithBody(player) {
+    const snake = player.snake;
+    const head = snake.cells[0];
+
+    for (let i = 1; i < snake.cells.length; i++) {
+        const cell = snake.cells[i];
+        if (head.x === cell.x && head.y === cell.y) {
+            // Colisão com o próprio corpo, reiniciar tamanho da cobra
+            snake.cells = [];
+            snake.maxCells = 4;
+            break;
+        }
+    }
+}
+
 io.on('connection', (socket) => {
     socket.on('newPlayer', () => {
         players[socket.id] = {
@@ -90,6 +105,9 @@ setInterval(() => {
                 fruits.splice(index, 1); // Remover a fruta do array de frutas
             }
         });
+
+        // Verificar colisão com o próprio corpo
+        checkCollisionWithBody(player);
     }
 
     // Gerar uma nova fruta se não houver frutas no momento
