@@ -17,6 +17,7 @@ app.get('/', (req, res) => {
 const players = {};
 let fruits = []; // Array para armazenar as frutas
 
+// Função para gerar uma posição aleatória para a fruta
 function generateRandomFruitPosition() {
     const grid = 16; // Tamanho do grid da cobra (mesmo valor utilizado no cliente)
     const position = {
@@ -26,22 +27,24 @@ function generateRandomFruitPosition() {
     return position;
 }
 
+// Função para criar uma nova fruta
 function createFruit() {
     const fruit = generateRandomFruitPosition();
-    
+
     // Cores disponíveis para as frutas
     const colors = ['red', 'green', 'yellow', 'orange'];
-    
+
     // Escolher uma cor aleatória
     const randomColor = colors[Math.floor(Math.random() * colors.length)];
-    
+
     // Adicionar a cor à fruta
     fruit.color = randomColor;
-    
+
     fruits.push(fruit);
     io.emit('fruits', fruits); // Emitir as frutas para todos os jogadores
 }
 
+// Função para verificar colisão com o próprio corpo da cobra
 function checkCollisionWithBody(player) {
     const snake = player.snake;
     const head = snake.cells[0];
@@ -57,7 +60,21 @@ function checkCollisionWithBody(player) {
     }
 }
 
-io.on('connection', (socket) => {
+// Função para verificar colisão com as frutas
+function checkCollisionWithFruits(player) {
+    const snake = player.snake;
+    const head = snake.cells[0];
+
+    fruits.forEach((fruit, index) => {
+        if (head.x === fruit.x && head.y === fruit.y) {
+            snake.maxCells++; // Aumentar o tamanho da cobra
+            fruits.splice(index, 1); // Remover a fruta do array de frutas
+        }
+    });
+}
+
+// Função para lidar com eventos de conexão
+function handleConnection(socket) {
     socket.on('newPlayer', () => {
         players[socket.id] = {
             snake: {
@@ -80,9 +97,10 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         delete players[socket.id];
     });
-});
+}
 
-setInterval(() => {
+// Função para atualizar o estado do jogo
+function updateGameState() {
     for (let playerId in players) {
         let player = players[playerId];
         let snake = player.snake;
@@ -109,12 +127,7 @@ setInterval(() => {
         }
 
         // Verificar colisão com as frutas
-        fruits.forEach((fruit, index) => {
-            if (snake.x === fruit.x && snake.y === fruit.y) {
-                snake.maxCells++; // Aumentar o tamanho da cobra
-                fruits.splice(index, 1); // Remover a fruta do array de frutas
-            }
-        });
+        checkCollisionWithFruits(player);
 
         // Verificar colisão com o próprio corpo
         checkCollisionWithBody(player);
@@ -127,7 +140,11 @@ setInterval(() => {
 
     io.emit('state', players);
     io.emit('fruits', fruits); // Emitir as frutas atualizadas para todos os jogadores
-}, 1000 / 15);
+}
+
+io.on('connection', handleConnection);
+
+setInterval(updateGameState, 1000 / 15);
 
 server.listen(port, () => {
     console.log(`Servidor escutando na porta ${port}`);
