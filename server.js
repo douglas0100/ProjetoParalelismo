@@ -28,6 +28,16 @@ function generateRandomFruitPosition() {
 
 function createFruit() {
     const fruit = generateRandomFruitPosition();
+    
+    // Cores disponíveis para as frutas
+    const colors = ['red', 'green', 'yellow', 'orange'];
+    
+    // Escolher uma cor aleatória
+    const randomColor = colors[Math.floor(Math.random() * colors.length)];
+    
+    // Adicionar a cor à fruta
+    fruit.color = randomColor;
+    
     fruits.push(fruit);
     io.emit('fruits', fruits); // Emitir as frutas para todos os jogadores
 }

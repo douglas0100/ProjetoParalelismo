@@ -58,8 +58,10 @@
         });
 
         socket.on('fruits', function (fruits) {
-            context.fillStyle = 'yellow';
             fruits.forEach(function (fruit) {
+                // Usar a cor da fruta para desenhá-la
+                context.fillStyle = fruit.color;
+
                 context.fillRect(fruit.x, fruit.y, grid - 1, grid - 1);
             });
         });
