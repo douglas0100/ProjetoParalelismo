@@ -1,0 +1,9 @@
+# Para executar o game digite no terminal o seguinte codigo:
+
+node server.js
+
+# abra outra guia no terminal e execute o seguinte codigo:
+
+gp url 3000
+
+# será gerado um link de acesso ao novo ao jogo, copie-o e cole-o no navegador.
