@@ -18,14 +18,29 @@
             justify-content: center;
         }
 
+        #canvas-container {
+            position: relative;
+            width: 780px;
+            height: 780px;
+            background-image: url('borders.jpg'); /* Definir a imagem de fundo */
+            background-size: cover;
+            background-position: center;
+        }
+
         canvas {
             border: 1px solid white;
+            background-image: url('grid.jpg'); /* Definir a imagem de fundo do grid */
+            background-size: cover;
+            background-position: center;
+            transform: translate(10%, 10%);
         }
     </style>
 </head>
 
 <body>
-    <canvas width="640" height="640" id="game"></canvas>
+    <div id="canvas-container">
+        <canvas width="640" height="640" id="game"></canvas>
+    </div>
     <script src="/socket.io/socket.io.js"></script>
     <script>
         var canvas = document.getElementById('game');
@@ -33,6 +48,13 @@
 
         var grid = 16;
         var count = 0;
+
+        // Carregar as imagens da cabeça e do corpo
+        var headImage = new Image();
+        headImage.src = 'head.jpg';
+
+        var bodyImage = new Image();
+        bodyImage.src = 'body.jpg';
 
         var socket = io();
 
@@ -47,21 +69,18 @@
                 var player = players[playerId];
                 var snake = player.snake;
 
-                context.fillStyle = 'green';
                 snake.cells.forEach(function (cell, index) {
-                    context.fillRect(cell.x, cell.y, grid - 1, grid - 1);
+                    // Desenhar a imagem do corpo da cobra
+                    context.drawImage(bodyImage, cell.x, cell.y, grid - 1, grid - 1);
                 });
 
-                context.fillStyle = 'red';
-                context.fillRect(snake.x, snake.y, grid - 1, grid - 1);
+                // Desenhar a imagem da cabeça da cobra
+                context.drawImage(headImage, snake.x, snake.y, grid - 1, grid - 1);
             }
         });
-
         socket.on('fruits', function (fruits) {
             fruits.forEach(function (fruit) {
-                // Usar a cor da fruta para desenhá-la
                 context.fillStyle = fruit.color;
-
                 context.fillRect(fruit.x, fruit.y, grid - 1, grid - 1);
             });
         });
