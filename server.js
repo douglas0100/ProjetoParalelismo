@@ -34,7 +34,7 @@ function createFruit() {
     const fruit = generateRandomFruitPosition();
 
     // Cores disponíveis para as frutas
-    const colors = ['red', 'green', 'yellow', 'orange'];
+    const colors = ['banana', 'apple', 'watermelon', 'orange'];
 
     // Escolher uma cor aleatória
     const randomColor = colors[Math.floor(Math.random() * colors.length)];
@@ -45,6 +45,7 @@ function createFruit() {
     fruits.push(fruit);
     io.emit('fruits', fruits); // Emitir as frutas para todos os jogadores
 }
+
 
 // Função para verificar colisão com o próprio corpo da cobra
 function checkCollisionWithBody(player) {
